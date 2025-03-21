@@ -7,6 +7,7 @@ __pycache__/
 
 # IDE specific files
 .vscode/
+.DS_Store/
 
 # Project specific
 data/visualizations/

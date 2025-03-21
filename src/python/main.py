@@ -114,12 +114,18 @@ class FinancialKnowledgeSystem:
         logging.info("Cleaning up resources...")
         if self.web_process and self.web_process.poll() is None:
             try:
+                logging.info("Attempting to terminate web server gracefully...")
                 self.web_process.terminate()
                 self.web_process.wait(timeout=5)
+                logging.info("Web server terminated successfully")
             except subprocess.TimeoutExpired:
+                logging.warning("Web server did not terminate gracefully, forcing kill...")
                 self.web_process.kill()
+                logging.info("Web server killed successfully")
             except Exception as e:
                 logging.error(f"Error during cleanup: {str(e)}")
+        else:
+            logging.info("No web server process to clean up")
         
     def check_neo4j(self) -> bool:
         """Check if Neo4j is running"""
@@ -194,13 +200,15 @@ class FinancialKnowledgeSystem:
                 logging.info("Starting web server...")
                 # Kill any existing process on port 3000
                 try:
+                    logging.info("Checking for existing web server process...")
                     subprocess.run(
                         ["lsof -ti:3000 | xargs kill -9"],
                         shell=True,
                         stderr=subprocess.DEVNULL
                     )
+                    logging.info("Any existing web server process has been terminated")
                 except Exception:
-                    pass  # Ignore errors if no process found
+                    logging.info("No existing web server process found")
                 
                 # Check if package.json exists
                 if not (self.web_dir / 'package.json').exists():
@@ -271,7 +279,7 @@ class FinancialKnowledgeSystem:
             
             terminal_logger.info("\n🎉 Q2 is running!")
             terminal_logger.info("Visit http://localhost:3000 to view the visualization")
-            terminal_logger.info("Press 'q' to return to menu or Ctrl+C to stop the server")
+            terminal_logger.info("Press 'q' end the web server and return to menu")
             
             # Keep the script running while web server is alive
             while web_process.poll() is None:

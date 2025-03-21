@@ -34,7 +34,9 @@ When starting the system, users are prompted to provide:
 - Starts a web visualization server
 - Access visualization at http://localhost:3000
 - Shows real-time relationship graphs
-- Can be stopped with Ctrl+C
+- Start Q2
+- Press 'q' to return to menu
+- Press '0' to start Q2 again
 
 ##### Q3 - Clustering Analysis
 - Performs DBSCAN clustering on articles
