@@ -1,6 +1,7 @@
 # Financial News Nodes Clustering
 
 > Below is a causal gui demo
+
 https://github.com/user-attachments/assets/5ea393b7-d9cc-4dd7-9513-a57770734c6d
 
 
