@@ -1,0 +1,14 @@
+# Python virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+
+
+# IDE specific files
+.vscode/
+
+# Project specific
+data/visualizations/
+temp/
+logs/

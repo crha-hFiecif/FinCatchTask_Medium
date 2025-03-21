@@ -1,0 +1,208 @@
+{
+  "0": {
+    "size": 2,
+    "articles": [
+      "Compound interest",
+      "Time value of money"
+    ],
+    "common_terms": [
+      "lump",
+      "later",
+      "today",
+      "bank",
+      "clarity",
+      "yield",
+      "gave",
+      "light",
+      "following",
+      "expressed"
+    ],
+    "relationships": [
+      {
+        "type": "causes",
+        "count": 1
+      }
+    ]
+  },
+  "-1": {
+    "size": 10,
+    "articles": [
+      "Annual percentage rate",
+      "Currency",
+      "Earnings per share",
+      "Market capitalization",
+      "Return on equity",
+      "What Is Retirement Planning? Steps, Stages, and What to Consider",
+      "What Is a Budget? Plus 11 Budgeting Myths Holding You Back",
+      "Futures Contract Definition: Types, Mechanics, and Uses in Trading",
+      "What Are Options? Types, Spreads, Example, and Risk Metrics",
+      "Cryptocurrency Explained With Pros and Cons for Investment"
+    ],
+    "common_terms": [
+      "institution",
+      "lump",
+      "committee",
+      "strategic",
+      "keys",
+      "today",
+      "croesus",
+      "eligibility",
+      "bedroom",
+      "clarity"
+    ],
+    "relationships": []
+  },
+  "1": {
+    "size": 2,
+    "articles": [
+      "Interest rate",
+      "Bonds: How They Work and How To Invest"
+    ],
+    "common_terms": [
+      "fitch",
+      "proposed",
+      "deep",
+      "safety",
+      "bank",
+      "currency",
+      "keynes",
+      "increase",
+      "affect",
+      "reserves"
+    ],
+    "relationships": [
+      {
+        "type": "influenced_by",
+        "count": 1
+      },
+      {
+        "type": "causes",
+        "count": 1
+      }
+    ]
+  },
+  "2": {
+    "size": 4,
+    "articles": [
+      "Valuation (finance)",
+      "Financial ratio",
+      "Technical Analysis: What It Is and How to Use It in Investing",
+      "Fundamental Analysis: Principles, Types, and How to Use It"
+    ],
+    "common_terms": [
+      "committee",
+      "rules",
+      "competition",
+      "deep",
+      "today",
+      "personal",
+      "strategic",
+      "bank",
+      "increase",
+      "affect"
+    ],
+    "relationships": [
+      {
+        "type": "causes",
+        "count": 4
+      },
+      {
+        "type": "correlates_with",
+        "count": 3
+      }
+    ]
+  },
+  "3": {
+    "size": 2,
+    "articles": [
+      "Price\u2013earnings ratio",
+      "Dividend payout ratio"
+    ],
+    "common_terms": [
+      "vance",
+      "arises",
+      "money",
+      "inflation",
+      "increase",
+      "accounting",
+      "realized",
+      "yield",
+      "dollar",
+      "unfunded"
+    ],
+    "relationships": [
+      {
+        "type": "causes",
+        "count": 1
+      }
+    ]
+  },
+  "4": {
+    "size": 3,
+    "articles": [
+      "Dividend yield",
+      "Dividend",
+      "Stocks: What They Are, Main Types, How They Differ From Bonds"
+    ],
+    "common_terms": [
+      "proposed",
+      "institution",
+      "rules",
+      "bank",
+      "increase",
+      "affect",
+      "reserves",
+      "refused",
+      "yield",
+      "event"
+    ],
+    "relationships": [
+      {
+        "type": "correlates_with",
+        "count": 2
+      },
+      {
+        "type": "causes",
+        "count": 2
+      },
+      {
+        "type": "influenced_by",
+        "count": 1
+      }
+    ]
+  },
+  "5": {
+    "size": 3,
+    "articles": [
+      "Investing Explained: Types of Investments and How to Get Started",
+      "Investing in Mutual Funds: What They Are and How They Work",
+      "Exchange-Traded Fund (ETF): How to Invest and What It Is"
+    ],
+    "common_terms": [
+      "lends",
+      "enabling",
+      "rules",
+      "competition",
+      "today",
+      "personal",
+      "bank",
+      "wider",
+      "certificates",
+      "increase"
+    ],
+    "relationships": [
+      {
+        "type": "correlates_with",
+        "count": 2
+      },
+      {
+        "type": "influenced_by",
+        "count": 2
+      },
+      {
+        "type": "causes",
+        "count": 2
+      }
+    ]
+  }
+}
