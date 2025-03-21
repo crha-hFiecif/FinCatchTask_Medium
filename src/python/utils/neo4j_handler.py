@@ -14,7 +14,7 @@ class Neo4jHandler:
     def test_connection(self):
         """Test if the Neo4j connection is working"""
         try:
-            with self.driver.session(database="fincatchdb") as session:
+            with self.driver.session(database="financial25News") as session:
                 # Try a simple query
                 result = session.run("RETURN 1")
                 result.single()
@@ -29,14 +29,14 @@ class Neo4jHandler:
         self.close()
     
     def create_knowledge_node(self, title: str, content: str, summary: str):
-        with self.driver.session(database="fincatchdb") as session:
+        with self.driver.session(database="financial25News") as session:
             session.run(
                 "CREATE (n:Knowledge {title: $title, content: $content, summary: $summary})",
                 title=title, content=content, summary=summary
             )
     
     def create_causal_relationship(self, source_title: str, target_title: str, relationship_type: str, confidence: float):
-        with self.driver.session(database="fincatchdb") as session:
+        with self.driver.session(database="financial25News") as session:
             session.run(
                 """
                 MATCH (source:Knowledge {title: $source_title})
@@ -90,7 +90,7 @@ class Neo4jHandler:
     
     def get_knowledge_graph(self):
         """Retrieve the entire knowledge graph"""
-        with self.driver.session(database="fincatchdb") as session:
+        with self.driver.session(database="financial25News") as session:
             result = session.run("""
                 MATCH (n:Knowledge)
                 OPTIONAL MATCH (n)-[r:CAUSES]->(m:Knowledge)

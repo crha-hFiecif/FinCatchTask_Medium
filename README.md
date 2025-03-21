@@ -1,4 +1,4 @@
-# FinCatchTask_Medium
+# Financial New Nodes Clustering
 
 ## System Design
 
@@ -13,7 +13,7 @@ When starting the system, users are prompted to provide:
 - Neo4j database credentials:
   - Database name (defaults to "neo4j")
   - Password
-- CSV file path for article sources (defaults to `data/FinCatch_Sources_Medium.csv`)
+- CSV file path for article sources (defaults to `data/Financial_News_Sources_Medium.csv`)
   - After providing the path (or pressing Enter for default), the system automatically Q1:
     - Validates the CSV file exists
     - Runs the article extraction process
@@ -21,7 +21,7 @@ When starting the system, users are prompted to provide:
 
 #### Main Menu Options
 ```
-=== FinCatchTask System Menu ===
+=== FinNews Task System Menu ===
 0: Run Q2 - Build Relationships and Start Visualization Server
 1: Run Q3 - Perform Clustering Analysis
 2: Exit System
@@ -91,7 +91,7 @@ python -m spacy download en_core_web_sm
 4. Set up Neo4j:
 - Open Neo4j Desktop
 - Create a new database (if not already created)
-- Set the password to "fincatch"
+- Set the password to "Your Database"
 - Start the database
 - Note: The default connection string is `bolt://localhost:7687`
 

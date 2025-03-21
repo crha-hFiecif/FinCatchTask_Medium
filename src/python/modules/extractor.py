@@ -168,7 +168,7 @@ class ArticleExtractor:
 def main():
     """Main function to demonstrate usage"""
     extractor = ArticleExtractor(max_workers=5, rate_limit_delay=0.5)
-    articles = extractor.process_csv('../../data/FinCatch_Sources_Medium.csv')
+    articles = extractor.process_csv('../../data/Financial_News_Sources.csv')
     
     # Save results
     if articles:

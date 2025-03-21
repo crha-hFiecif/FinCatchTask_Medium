@@ -1,5 +1,5 @@
 """
-FinCatchTask_Medium modules package.
+Modules package.
 Contains the core functionality for article extraction, relationship building, and clustering.
 """
 

@@ -64,11 +64,11 @@ class FinancialKnowledgeSystem:
         
     def get_user_input(self):
         """Get Neo4j credentials and CSV path from user"""
-        terminal_logger.info("\n=== FinCatchTask System Setup ===")
+        terminal_logger.info("\n=== Task System Setup ===")
         
         # Get Neo4j credentials
         terminal_logger.info("\nPlease enter your Neo4j database credentials:")
-        db_name = input("Database name (default: fincatchdb): ").strip() or "fincatchdb"
+        db_name = input("Database name (default: financial25News): ").strip() or "financial25News"
         password = input("Password: ").strip()
         
         # Initialize Neo4j handler with user credentials
@@ -79,7 +79,7 @@ class FinancialKnowledgeSystem:
         )
         
         # Get CSV path
-        default_csv = self.project_root / 'data' / 'FinCatch_Sources_Medium.csv'
+        default_csv = self.project_root / 'data' / 'Financial_News_Sources.csv'
         terminal_logger.info(f"\nEnter the path to your CSV file (press Enter for default: {default_csv}):")
         csv_input = input().strip()
         
@@ -255,7 +255,7 @@ class FinancialKnowledgeSystem:
 
     def show_menu(self):
         """Display the main menu"""
-        terminal_logger.info("\n=== FinCatchTask System Menu ===")
+        terminal_logger.info("\n=== Task System Menu ===")
         terminal_logger.info("0: Run Q2 - Build Relationships and Start Visualization Server")
         terminal_logger.info("1: Run Q3 - Perform Clustering Analysis")
         terminal_logger.info("2: Exit System")

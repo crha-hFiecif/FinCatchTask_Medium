@@ -121,7 +121,7 @@ class KnowledgeClusterer:
         try:
             # Set default output directory using absolute path
             if output_dir is None:
-                # Get the project root directory (FinCatchTask_Medium)
+                # Get the project root directory (Task)
                 current_dir = os.path.abspath(os.path.dirname(__file__))  # Get absolute path
                 print(f"Current directory: {current_dir}")
                 

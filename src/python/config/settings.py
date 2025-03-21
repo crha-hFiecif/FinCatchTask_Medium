@@ -42,7 +42,7 @@ WEB_CONFIG = {
 
 # Input/Output files
 FILES = {
-    'input_csv': os.path.join(DATA_DIR, 'FinCatch_Sources_Medium.csv'),
+    'input_csv': os.path.join(DATA_DIR, 'Financial_News_Sources.csv'),
     'processed_articles': os.path.join(DATA_DIR, 'processed_articles.csv'),
     'cluster_summaries': os.path.join(VISUALIZATIONS_DIR, 'cluster_summaries.json')
 } 
