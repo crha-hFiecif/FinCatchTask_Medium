@@ -4,7 +4,7 @@ import spacy
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-class Neo4jHandler:
+class neo4jHandler:
     def __init__(self, uri="bolt://localhost:7687", 
                  user="neo4j",  # Always use "neo4j" as username
                  password="12345678"):  # Please replace with your actual Neo4j password

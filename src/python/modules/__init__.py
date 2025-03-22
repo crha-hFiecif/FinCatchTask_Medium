@@ -3,8 +3,8 @@ Modules package.
 Contains the core functionality for article extraction, relationship building, and clustering.
 """
 
-from .extractor import ArticleExtractor
-from .build_relationships import RelationshipBuilder
-from .clustering import KnowledgeClusterer
+from .extractor import articleExtractor
+from .build_relationships import relationshipBuilder
+from .clustering import knowledgeCluster
 
-__all__ = ['ArticleExtractor', 'RelationshipBuilder', 'KnowledgeClusterer'] 
+__all__ = ['articleExtractor', 'relationshipBuilder', 'knowledgeCluster'] 

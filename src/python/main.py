@@ -9,10 +9,14 @@ from pathlib import Path
 import signal
 import os
 from typing import Tuple, Optional
-from modules import ArticleExtractor, RelationshipBuilder, KnowledgeClusterer
-from utils.neo4j_handler import Neo4jHandler
+
+from modules import articleExtractor, relationshipBuilder, knowledgeCluster
+from utils.neo4j_handler import neo4jHandler
+
 import select
 from datetime import datetime
+
+from utils.logger_handler import loggerHandler
 
 # Create logs directory
 project_root = Path(__file__).parent.parent.parent
@@ -55,6 +59,9 @@ class WebServerError(SystemError):
 
 class FinancialKnowledgeSystem:
     def __init__(self):
+        self.logger_handler = loggerHandler()
+        self.logger = self.logger_handler.logger
+        self.logger_handler.log_process_start()
         self.project_root = Path(__file__).parent.parent.parent
         self.python_dir = self.project_root / 'src' / 'python'
         self.web_dir = self.project_root / 'src' / 'web'
@@ -72,14 +79,14 @@ class FinancialKnowledgeSystem:
         password = input("Password: ").strip()
         
         # Initialize Neo4j handler with user credentials
-        self.neo4j = Neo4jHandler(
+        self.neo4j = neo4jHandler(
             uri="bolt://localhost:7687",
             user="neo4j",  # Always use "neo4j" as username
             password=password
         )
         
         # Get CSV path
-        default_csv = self.project_root / 'data' / 'Financial_News_Sources.csv'
+        default_csv = self.project_root / 'data' / 'FinCatch_Sources_Medium.csv'
         terminal_logger.info(f"\nEnter the path to your CSV file (press Enter for default: {default_csv}):")
         csv_input = input().strip()
         
@@ -115,12 +122,18 @@ class FinancialKnowledgeSystem:
         if self.web_process and self.web_process.poll() is None:
             try:
                 logging.info("Attempting to terminate web server gracefully...")
-                self.web_process.terminate()
+                if os.name == 'nt':  # Windows
+                    self.web_process.send_signal(signal.CTRL_BREAK_EVENT)  # Windows-specific
+                else:  # Unix-like systems
+                    self.web_process.terminate()
                 self.web_process.wait(timeout=5)
                 logging.info("Web server terminated successfully")
             except subprocess.TimeoutExpired:
                 logging.warning("Web server did not terminate gracefully, forcing kill...")
-                self.web_process.kill()
+                if os.name == 'nt':  # Windows
+                    subprocess.run(['taskkill', '/F', '/T', '/PID', str(self.web_process.pid)])
+                else:  # Unix-like systems
+                    self.web_process.kill()
                 logging.info("Web server killed successfully")
             except Exception as e:
                 logging.error(f"Error during cleanup: {str(e)}")
@@ -160,12 +173,18 @@ class FinancialKnowledgeSystem:
                 
                 logging.info(f"Running {script_name}...")
                 
+                # Use appropriate Python executable path
+                python_executable = sys.executable
+                if os.name == 'nt':  # Windows
+                    python_executable = str(python_executable).replace('\\', '/')
+                
                 result = subprocess.run(
-                    [sys.executable, str(script_path)],
+                    [python_executable, str(script_path)],
                     cwd=self.python_dir,
                     check=True,
                     capture_output=True,
-                    text=True
+                    text=True,
+                    shell=True if os.name == 'nt' else False  # Use shell on Windows
                 )
                 
                 if result.stdout:
@@ -201,11 +220,19 @@ class FinancialKnowledgeSystem:
                 # Kill any existing process on port 3000
                 try:
                     logging.info("Checking for existing web server process...")
-                    subprocess.run(
-                        ["lsof -ti:3000 | xargs kill -9"],
-                        shell=True,
-                        stderr=subprocess.DEVNULL
-                    )
+                    if os.name == 'nt':  # Windows
+                        subprocess.run(
+                            ["netstat -ano | findstr :3000"],
+                            shell=True,
+                            capture_output=True,
+                            text=True
+                        )
+                    else:  # Unix-like systems
+                        subprocess.run(
+                            ["lsof -ti:3000 | xargs kill -9"],
+                            shell=True,
+                            stderr=subprocess.DEVNULL
+                        )
                     logging.info("Any existing web server process has been terminated")
                 except Exception:
                     logging.info("No existing web server process found")
@@ -214,13 +241,24 @@ class FinancialKnowledgeSystem:
                 if not (self.web_dir / 'package.json').exists():
                     raise WebServerError("package.json not found in web directory")
                 
-                web_process = subprocess.Popen(
-                    'npm start',
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    cwd=self.web_dir
-                )
+                # Use appropriate command based on OS
+                if os.name == 'nt':  # Windows
+                    web_process = subprocess.Popen(
+                        'npm.cmd start',  # Use npm.cmd on Windows
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        cwd=self.web_dir,
+                        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP  # Windows-specific
+                    )
+                else:  # Unix-like systems
+                    web_process = subprocess.Popen(
+                        'npm start',
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        cwd=self.web_dir
+                    )
                 
                 # Wait for server to start
                 for _ in range(30):  # Wait up to 30 seconds
@@ -263,6 +301,7 @@ class FinancialKnowledgeSystem:
     def run_q2(self):
         """Run Q2 - Build relationships and start visualization server"""
         try:
+            self.logger_handler.log_q2_start()
             logging.info("Starting Q2 - Building relationships...")
             
             # Check Neo4j
@@ -281,24 +320,34 @@ class FinancialKnowledgeSystem:
             terminal_logger.info("Visit http://localhost:3000 to view the visualization")
             terminal_logger.info("Press 'q' end the web server and return to menu")
             
-            # Keep the script running while web server is alive
+            
             while web_process.poll() is None:
-                if sys.stdin.isatty():  # Check if we're in a terminal
-                    if select.select([sys.stdin], [], [], 0.0)[0]:  # Check if there's input
+                if sys.stdin.isatty():  
+                    if select.select([sys.stdin], [], [], 0.0)[0]: 
                         if sys.stdin.read(1) == 'q':
                             logging.info("Stopping web server and returning to menu...")
                             self.cleanup()
                             return
                 time.sleep(1)
                 
+            # Save visualization
+            if hasattr(self, 'graph_data'):
+                self.logger_handler.save_visualization('q2_graph', self.graph_data)
+            
+            self.logger_handler.log_q2_result({
+                'num_nodes': len(self.graph_data['nodes']),
+                'num_edges': len(self.graph_data['links']),
+                'visualization_path': str(self.logger_handler.viz_dir / f"q2_graph_{self.logger_handler.timestamp}.png")
+            })
+            
         except Exception as e:
-            logging.error(f"Error in Q2: {str(e)}")
-        finally:
-            self.cleanup()
+            self.logger_handler.log_error(e)
+            raise
             
     def run_q3(self):
         """Run Q3 - Perform clustering analysis"""
         try:
+            self.logger_handler.log_q3_start()
             logging.info("Starting Q3 - Clustering analysis...")
             
             # Check Neo4j
@@ -316,9 +365,96 @@ class FinancialKnowledgeSystem:
             terminal_logger.info("\n✅ Clustering analysis completed!")
             terminal_logger.info(f"📈 Visualizations are available in: {viz_dir}")
             
-        except Exception as e:
-            logging.error(f"Error in Q3: {str(e)}")
+            # Get cluster data from Neo4j
+            try:
+                from modules.clustering import knowledgeCluster
+                import json
+                
+                clusterer = knowledgeCluster()
+                cluster_data = clusterer.get_cluster_data()
+                
+                # Save visualization if cluster data exists
+                if cluster_data:
+                    # Save cluster data as JSON
+                    cluster_json_path = self.logger_handler.viz_dir / f"q3_clusters_{self.logger_handler.timestamp}.json"
+                    with open(cluster_json_path, 'w') as f:
+                        json.dump(cluster_data, f, indent=2)
+                    
+                    self.logger_handler.log_q3_result({
+                        'num_clusters': len(cluster_data),
+                        'visualization_path': str(cluster_json_path)
+                    })
+                else:
+                    self.logger_handler.log_q3_result({
+                        'status': 'completed',
+                        'message': 'No cluster data available'
+                    })
+            except Exception as e:
+                self.logger_handler.log_error(e, {'context': 'Failed to process cluster data'})
+                raise
             
+        except Exception as e:
+            self.logger_handler.log_error(e)
+            raise
+            
+    def run_menu(self):
+        """Run the interactive menu"""
+        while True:
+            print("\n=== FinCatch System Menu ===")
+            print("1: Run relationship analysis (Q2)")
+            print("2: Run clustering analysis (Q3)")
+            print("q: Quit")
+            print("\nNote: Please run options in order (1 → 2)")
+            
+            choice = input("\nEnter your choice: ").strip().lower()
+            
+            try:
+                if choice == '1':
+                    # Check if extraction has been run
+                    with self.neo4j.driver.session() as session:
+                        result = session.run("MATCH (a:Article) RETURN count(a) as count")
+                        article_count = result.single()['count']
+                        if article_count == 0:
+                            print("\n❌ Error: No articles found in database.")
+                            print("Please restart the system to extract articles.")
+                            continue
+                    self.run_q2()
+                elif choice == '2':
+                    # Check if both extraction and relationship analysis have been run
+                    with self.neo4j.driver.session() as session:
+                        # Check for articles
+                        result = session.run("MATCH (a:Article) RETURN count(a) as count")
+                        article_count = result.single()['count']
+                        if article_count == 0:
+                            print("\n❌ Error: No articles found in database.")
+                            print("Please restart the system to extract articles.")
+                            continue
+                        
+                        # Check for relationships
+                        result = session.run("""
+                            MATCH (a:Article)-[r]->(b:Article)
+                            RETURN count(r) as count
+                        """)
+                        relationship_count = result.single()['count']
+                        if relationship_count == 0:
+                            print("\n❌ Error: No relationships found between articles.")
+                            print("Please run option '1' (Relationship analysis) first.")
+                            continue
+                    self.run_q3()
+                elif choice == 'q':
+                    print("\nStopping system...")
+                    break
+                else:
+                    print("\n❌ Invalid choice. Please enter one of the following:")
+                    print("- 1: Run relationship analysis")
+                    print("- 2: Run clustering analysis")
+                    print("- q: Quit")
+                
+            except Exception as e:
+                logging.error(f"Unexpected error: {str(e)}")
+                print(f"\n❌ Error: {str(e)}")
+                print("Please try again or enter 'q' to quit.")
+
     def run(self):
         """Run the complete system with interactive menu"""
         try:
@@ -328,20 +464,8 @@ class FinancialKnowledgeSystem:
             # Get user input first
             self.get_user_input()
             
-            while True:
-                self.show_menu()
-                choice = input("\nEnter your choice (0-2): ").strip()
-                
-                if choice == "0":
-                    self.run_q2()
-                elif choice == "1":
-                    self.run_q3()
-                elif choice == "2":
-                    terminal_logger.info("\nExiting system...")
-                    break
-                else:
-                    terminal_logger.info("Invalid choice. Please try again.")
-                    
+            self.run_menu()
+            
         except KeyboardInterrupt:
             terminal_logger.info("\nShutting down gracefully...")
         except Exception as e:

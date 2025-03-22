@@ -16,7 +16,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-class ArticleExtractor:
+class articleExtractor:
     def __init__(self, max_workers: int = 5, rate_limit_delay: float = 0.5):
         """
         Initialize the ArticleExtractor.
@@ -167,8 +167,8 @@ class ArticleExtractor:
 
 def main():
     """Main function to demonstrate usage"""
-    extractor = ArticleExtractor(max_workers=5, rate_limit_delay=0.5)
-    articles = extractor.process_csv('../../data/Financial_News_Sources.csv')
+    extractor = articleExtractor(max_workers=5, rate_limit_delay=0.5)
+    articles = extractor.process_csv('../../data/FinCatch_Sources_Medium.csv')
     
     # Save results
     if articles:

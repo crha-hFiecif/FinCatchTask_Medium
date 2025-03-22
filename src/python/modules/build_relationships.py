@@ -13,7 +13,7 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-class RelationshipBuilder:
+class relationshipBuilder:
     def __init__(self, uri: str = "bolt://localhost:7687", 
                  user: str = "neo4j", 
                  password: str = "12345678"):
@@ -117,7 +117,7 @@ def main():
         articles = df.to_dict('records')
         
         # Initialize and run relationship builder
-        builder = RelationshipBuilder()
+        builder = relationshipBuilder()
         builder.create_relationships(articles)
         
         logging.info("Successfully built relationships in Neo4j")

@@ -1,4 +1,4 @@
-# Financial News Nodes Clustering
+# FinCatch MediumQ: Financial News Causal Analysis System
 
 > Below is a causal gui demo
 
@@ -9,27 +9,31 @@ https://github.com/user-attachments/assets/5ea393b7-d9cc-4dd7-9513-a57770734c6d
 
 ### Interactive Menu System
 The system features an interactive menu-driven interface that allows users to:
-1. Configure system settings at startup
-2. Choose specific tasks to run
-3. View results and visualizations
+1. Prompt for Neo4j credentials at startup
+2. Extract articles from the CSV file
+3. Show an interactive menu for running Q2 (relationship visualization) and Q3 (clustering analysis)
+4. Create necessary directories (logs, visualizations)
 
 #### Initial Setup
 When starting the system, users are prompted to provide:
 - Neo4j database credentials:
-  - Database name (defaults to "neo4j")
+  - Database name (or push `enter`, defaults to "financial25News")
   - Password
-- CSV file path for article sources (defaults to `data/Financial_News_Sources_Medium.csv`)
+- CSV file path for article sources (or push `enter`, defaults to `data/FinCatch_Sources_Medium.csv`)
   - After providing the path (or pressing Enter for default), the system automatically Q1:
     - Validates the CSV file exists
     - Runs the article extraction process
     - Shows progress and completion status
+    - Saves processed article to `data/processed_articles.csv`
 
 #### Main Menu Options
 ```
-=== FinNews Task System Menu ===
-0: Run Q2 - Build Relationships and Start Visualization Server
-1: Run Q3 - Perform Clustering Analysis
-2: Exit System
+=== FinCatch System Menu ===
+1: Run relationship analysis (Q2)
+2: Run clustering analysis (Q3)
+q: Quit
+
+Note: Please run options in order (1 → 2)
 ```
 
 #### Task Descriptions
@@ -39,9 +43,8 @@ When starting the system, users are prompted to provide:
 - Starts a web visualization server
 - Access visualization at http://localhost:3000
 - Shows real-time relationship graphs
-- Start Q2
+- Press '1' to start Q2
 - Press 'q' to return to menu
-- Press '0' to start Q2 again
 
 ##### Q3 - Clustering Analysis
 - Performs DBSCAN clustering on articles
@@ -50,21 +53,24 @@ When starting the system, users are prompted to provide:
   - t-SNE visualization
   - Similarity matrix heatmap
   - Cluster relationship graph
-- Saves visualizations to `data/visualizations/`
+- Saves visualizations to `.data/visualizations/`
+- Saves cluster details to `.logs/uuid/visualizations`
 - Shows clear output paths in terminal
+- Press '2' to start Q3
 
 ### Output Locations
 - Q2 Visualizations: Web interface at http://localhost:3000
-- Q3 Visualizations: `data/visualizations/` directory
+- Q3 Visualizations: `data/visualizations/` 
   - `cluster_sizes.png`: Distribution of articles across clusters
   - `tsne_clusters.png`: 2D visualization of article groupings
   - `similarity_matrix.png`: Article similarity heatmap
   - `cluster_relationships.png`: Cluster connection graph
-- Detailed logs will be saved to logs/ 
+- Detailed logs will be saved to `.logs/ `
   - system_YYYYMMDD_HHMMSS.log:
   - All system operations
   - Debug information
   - Error details
+  - Q3 cluster idx details
   - Timestamps and log levels
 
 ### Error Handling
@@ -77,36 +83,78 @@ When starting the system, users are prompted to provide:
 ## Quick Start
 
 ### Prerequisites
-- Python 3.11
-- Neo4j Desktop installed locally
+- Python Requirements: *Python(3.11)*
+    - All required packages installed via `pip install -r requirements.txt` in the root
+- Node.js Requirements: *Node.js(v23.5.0)*, *npm(10.9.2)*
+    - Web dependencies installed via npm install in the `src/web` directory
+- Neo4j Desktop installed locally: *Neo4j(5.24.0)*
+    - Default port: 7687
+    - Default username: "neo4j"
+- Operation System: Windows / Linux / MacOS Linux / Window(WSL)
 
-2. Create and activate a virtual environment:
-```bash
-python3 -m venv venv
-source venv/bin/activate  # On macOS/Linux
-venv\Source\activate    # On Window
-```
 
-3. Install required packages:
+1. Python Setup:
 ```bash
+# Create and activate a virtual environment in the root:
+python -m venv venv
+
+source venv/bin/activate # On macOS/Linux
+
+venv\Source\activate  # On Window 
+
+# Install required packages:
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
 ```
 
-4. Set up Neo4j:
+2. Web Interface Setup:
+```bash
+# Navigate to web directory
+cd src/web
+
+# Install Node.js dependencies
+npm install
+```
+
+3. Set up Neo4j:
 - Open Neo4j Desktop
 - Create a new database (if not already created)
-- Set the password to "Your Database"
+- Set the password to "the password of Your Database"
 - Start the database
 - Note: The default connection string is `bolt://localhost:7687`
 
-### Running the System
- Run the complete system:
+4. Running the System:
 ```bash
 cd ../..
 python3 run_system.py
 ```
---
+
+### TroubleShoot
+- Check on the `.logs/uuid/process_datetime.json` to debug
+
+#### Common Issues
+1. **Port 3000 in use**
+   - The system will automatically attempt to kill any existing process
+   - If issues persist, manually check and kill the process
+
+2. **Neo4j Connection**
+   - Ensure Neo4j is running
+   - Verify credentials
+   - Check if port 7687 is accessible
+
+3. **Web Server**
+   - If the web interface doesn't start, check Node.js and npm installation
+   - Verify all dependencies are installed in `src/web`
+
+#### Platform-Specific Notes
+
+##### Windows
+- Uses `npm.cmd` instead of `npm`
+- Uses Windows-specific process management
+- Paths are automatically handled for Windows compatibility
+
+----
+
 ### Requirements
 1. Q1 Extractor - ✅ COMPLETED
 - Parallel processing with ThreadPoolExecutor
@@ -127,7 +175,7 @@ Q3 Clustering Module - ✅ COMPLETED
 -  Integration with Neo4j
 -  Visualization support
 
---
+----
 
 ### Challenges and Solutions:
 1. Scalability:
@@ -144,3 +192,26 @@ Q3 Clustering Module - ✅ COMPLETED
 - Challenge: Handling network requests and database operations
 - Solution: Implemented connection pooling, retries, and error handling
 - Trade-off: Added complexity for better reliability
+
+4. Visualization Generation
+- Challenge: t-SNE visualization failing with precomputed distance matrices
+- Solution: Modified initialization parameters and added graceful error handling
+- Trade-off: Slightly longer computation time for more reliable visualization
+
+5. Cross-Platform Compatibility
+- Challenge: Ensuring the system works consistently across Windows and Unix-based systems
+- Solution: Implemented OS-specific checks and commands, unified path handling
+- Trade-off: Additional code complexity for better platform support
+
+----
+
+### Improvement
+
+1. Enhanced Error Recovery and System Resilience
+- Implement automatic retry mechanisms for failed API calls or database operations
+- Add system state persistence to allow resuming from the last successful state
+
+
+2. Improved Visualization and User Interface
+
+3. Advanced Analysis Features
